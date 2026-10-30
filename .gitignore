@@ -1,0 +1,16 @@
+# Arquivos de ambiente e chaves sensíveis
+.env
+*.env
+!.env.example
+
+# Dependências e caches
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
+
+# Dados locais do Docker
+postgres_data/

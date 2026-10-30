@@ -1,0 +1,657 @@
+/* ==========================================================================
+   COMPONENTES
+   Peças reutilizáveis em várias páginas: botões, campos, painéis, etiquetas,
+   tabelas, etapas, janela modal e mensagens rápidas.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Ícones SVG (traço padrão usado nos botões e no menu)
+   -------------------------------------------------------------------------- */
+.icon-button svg,
+.nav-item svg,
+.profile-button svg,
+.theme-toggle svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.profile-button svg {
+    color: var(--sidebar-bg);
+}
+
+
+/* --------------------------------------------------------------------------
+   Botões
+   -------------------------------------------------------------------------- */
+.icon-button {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.icon-button:hover {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Botão do menu: só aparece no celular (ver responsive.css) */
+.mobile-menu-button {
+    display: none;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 38px;
+    padding: 9px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: transform 0.16s, background 0.16s, box-shadow 0.16s;
+}
+
+.button:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Variações de botão */
+.button-primary {
+    border-color: #5145f5;
+    background: #5145f5;
+    color: #fff;
+}
+
+.button-primary:hover {
+    background: #4034e8;
+}
+
+.button-google {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.button-secondary {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.button-danger {
+    border-color: var(--sidebar-bg);
+    background: var(--sidebar-bg);
+    color: white;
+}
+
+.google-g {
+    color: #4285f4;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+/* --------------------------------------------------------------------------
+   Seletor de perfil (menu suspenso) e botão de tema
+   -------------------------------------------------------------------------- */
+.profile-button {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 132px;
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.chevron {
+    margin-left: auto;
+    color: var(--sidebar-bg);
+    font-size: 18px;
+}
+
+.dropdown-wrap {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 40;
+    width: 220px;
+    padding: 7px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+    color: var(--text-primary);
+}
+
+.dropdown-menu button {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+}
+
+.dropdown-menu button:hover {
+    background: var(--bg-primary);
+}
+
+.dropdown-menu p {
+    margin: 7px 10px 5px;
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+.theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 39px;
+    height: 39px;
+    border: 1px solid var(--border-color);
+    border-radius: 11px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+
+/* --------------------------------------------------------------------------
+   Etapas do atendimento (stepper)
+   -------------------------------------------------------------------------- */
+.stepper-card {
+    margin-bottom: 24px;
+    padding: 25px 27px;
+    border: 1px solid var(--border-color);
+    border-radius: 17px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+}
+
+.stepper {
+    display: flex;
+    align-items: center;
+    min-width: 680px;
+}
+
+.step {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 9px;
+    color: #9690a4;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.step-number {
+    display: grid;
+    place-items: center;
+    width: 33px;
+    height: 33px;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    background: var(--bg-card);
+    color: #9690a4;
+    font-weight: 700;
+}
+
+.step-line {
+    flex: 1 1 35px;
+    height: 1px;
+    min-width: 25px;
+    margin: 0 15px;
+    background: var(--border-color);
+}
+
+/* Etapa atual */
+.step.active {
+    color: var(--sidebar-bg);
+}
+
+.step.active .step-number {
+    border-color: var(--sidebar-bg);
+    background: var(--sidebar-bg);
+    box-shadow: 0 0 0 5px var(--yellow-bg);
+    color: #fff;
+}
+
+/* Etapas já concluídas */
+.step.completed .step-number {
+    border-color: var(--green-text);
+    background: var(--green-bg);
+    color: var(--green-text);
+}
+
+
+/* --------------------------------------------------------------------------
+   Painéis (cartões brancos com borda)
+   -------------------------------------------------------------------------- */
+.panel {
+    border: 1px solid var(--border-color);
+    border-radius: 17px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+}
+
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.panel-heading h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.45px;
+}
+
+.panel-subtitle {
+    margin: 5px 0 0;
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+.panel-rule {
+    height: 1px;
+    margin: 21px 0 18px;
+    background: var(--border-color);
+}
+
+.overline {
+    margin: 0 0 9px;
+    color: var(--sidebar-bg);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.connection-pill {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border-radius: 30px;
+    background: var(--green-bg);
+    color: var(--green-text);
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #26a779;
+    box-shadow: 0 0 0 4px rgba(38, 167, 121, 0.12);
+}
+
+.demo-note {
+    margin: 16px 0 0;
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+.empty-state {
+    padding: 28px 15px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.empty-state strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+}
+
+
+/* --------------------------------------------------------------------------
+   Etiquetas: tipo do relato e status
+   -------------------------------------------------------------------------- */
+.type-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 30px;
+    font-size: 10px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.type-pill.audio {
+    background: var(--yellow-bg);
+    color: #ad3b22;
+}
+
+.type-pill.text {
+    background: var(--green-bg);
+    color: var(--green-text);
+}
+
+.type-pill.alert {
+    background: var(--red-soft);
+    color: var(--sidebar-bg);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    border-radius: 30px;
+    background: var(--yellow-bg);
+    color: #8a5a00;
+    font-size: 10px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.status-badge.analysis {
+    background: #e9edff;
+    color: #4b56a6;
+}
+
+.status-badge.review {
+    background: #f4e7ff;
+    color: #7745a5;
+}
+
+.status-badge.done {
+    background: var(--green-bg);
+    color: var(--green-text);
+}
+
+
+/* --------------------------------------------------------------------------
+   Campos de formulário
+   -------------------------------------------------------------------------- */
+.field,
+.select-field,
+.textarea-field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.search-field {
+    flex: 1 1 230px;
+}
+
+.select-field {
+    width: auto;
+    min-width: 160px;
+}
+
+.textarea-field {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-label {
+    display: block;
+    margin: 14px 0 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Linha com busca e filtros acima das tabelas */
+.page-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 17px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Tabelas
+   -------------------------------------------------------------------------- */
+.table-wrap {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.data-table th,
+.data-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 12px;
+}
+
+.data-table th {
+    color: var(--text-secondary);
+    font-weight: 650;
+}
+
+.data-table td {
+    color: var(--text-primary);
+}
+
+
+/* --------------------------------------------------------------------------
+   Indicadores (cartões de métricas) e barra de progresso
+   -------------------------------------------------------------------------- */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    min-height: 98px;
+    padding: 17px 18px;
+    color: var(--text-secondary);
+    font-size: 0.91rem;
+}
+
+.metric-card strong {
+    display: block;
+    margin-top: 3px;
+    color: var(--text-primary);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.metric-card small {
+    display: block;
+    margin-top: 4px;
+}
+
+.progress-track {
+    height: 10px;
+    margin-top: 6px;
+    border-radius: 99px;
+    background: var(--border-color);
+    overflow: hidden;
+}
+
+.progress-track span {
+    display: block;
+    height: 100%;
+    border-right: 2px solid var(--sidebar-bg);
+    border-radius: 99px;
+    background: var(--accent-color);
+}
+
+/* Faixa de aviso amarela */
+.notice-strip {
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    border-left: 4px solid var(--accent-color);
+    border-radius: 8px;
+    background: var(--yellow-bg);
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   Janela modal
+   -------------------------------------------------------------------------- */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(20, 16, 13, 0.48);
+}
+
+.modal-backdrop[hidden] {
+    display: none;
+}
+
+.modal {
+    width: min(100%, 650px);
+    max-height: min(90vh, 850px);
+    padding: 25px;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    background: var(--bg-card);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+    color: var(--text-primary);
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.modal-header .eyebrow {
+    margin-bottom: 4px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 550;
+}
+
+.modal-close {
+    font-size: 28px;
+}
+
+.modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 18px;
+}
+
+/* Detalhes do relato dentro da modal */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.detail-item {
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--bg-primary);
+}
+
+.detail-item label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+.detail-item strong {
+    font-size: 12px;
+}
+
+.message-full {
+    margin: 0 0 18px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 11px;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+
+/* --------------------------------------------------------------------------
+   Mensagens rápidas (toasts)
+   -------------------------------------------------------------------------- */
+.toast-region {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 200;
+    display: grid;
+    gap: 9px;
+    width: min(360px, calc(100vw - 40px));
+}
+
+.toast {
+    padding: 13px 16px;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--green-text);
+    border-radius: 11px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+    color: var(--text-primary);
+    font-size: 12px;
+    animation: toast-in 0.18s ease-out;
+}
+
+.toast.error {
+    border-left-color: var(--sidebar-bg);
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

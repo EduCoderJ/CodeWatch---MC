@@ -1,0 +1,336 @@
+/* ==========================================================================
+   LAYOUT
+   Estrutura geral da tela: barra superior, menu lateral, área de trabalho,
+   título da página e rodapé.
+   ========================================================================== */
+
+.app-shell {
+    min-height: 100vh;
+}
+
+
+/* --------------------------------------------------------------------------
+   Barra superior
+   -------------------------------------------------------------------------- */
+.topbar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 54px;
+    padding: 0 18px 0 14px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-card);
+}
+
+/* Grupos que organizam seus itens em linha */
+.topbar-brand,
+.topbar-actions,
+.workspace-tools {
+    display: flex;
+    align-items: center;
+}
+
+.topbar-brand {
+    gap: 10px;
+}
+
+.topbar-actions {
+    gap: 8px;
+}
+
+/* Texto centralizado na barra (no celular volta ao fluxo normal) */
+.topbar-caption {
+    position: absolute;
+    left: 50%;
+    margin-left: auto;
+    font-size: 14px;
+    font-weight: 650;
+    white-space: nowrap;
+    transform: translateX(-50%);
+}
+
+.topbar-caption span {
+    margin-left: 6px;
+    color: var(--text-secondary);
+}
+
+.mini-mark {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--sidebar-bg);
+    font-weight: 800;
+}
+
+
+/* --------------------------------------------------------------------------
+   Menu lateral
+   -------------------------------------------------------------------------- */
+.sidebar {
+    position: fixed;
+    top: 54px;
+    bottom: 0;
+    left: 0;
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    width: 287px;
+    padding: 35px 16px 16px;
+    background: var(--sidebar-bg);
+    color: white;
+}
+
+/* Fundo escuro atrás do menu (só aparece no celular — ver responsive.css) */
+.sidebar-scrim {
+    display: none;
+}
+
+/* Logotipo e nome */
+.brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 56px;
+    padding: 0 10px;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    flex: 0 0 45px;
+    height: 45px;
+    border-radius: 14px;
+    background: var(--accent-color);
+    color: #b40e15;
+    font-size: 26px;
+    font-weight: 850;
+}
+
+.brand-name {
+    font-size: 20px;
+    font-weight: 750;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    margin-top: 3px;
+    font-size: 12px;
+    opacity: 0.92;
+}
+
+/* Lista de páginas */
+.nav-label {
+    margin-bottom: 12px;
+    padding: 0 15px;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.main-nav {
+    display: grid;
+    gap: 7px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    min-height: 53px;
+    padding: 0 15px;
+    border: 0;
+    border-radius: 13px;
+    background: transparent;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+}
+
+.nav-item svg {
+    flex: 0 0 22px;
+}
+
+/* Ícone em texto (▦, ☻, ⚑...) dos itens que não usam SVG */
+.nav-item > span:first-child {
+    min-width: 18px;
+    text-align: center;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item.active {
+    background: var(--accent-color);
+    color: var(--accent-ink);
+}
+
+/* Parte de baixo: suporte e preferências */
+.sidebar-bottom {
+    margin-top: auto;
+}
+
+.support-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 15px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--sidebar-deep);
+    color: #fff;
+    text-align: left;
+}
+
+.support-card strong,
+.support-card small {
+    display: block;
+}
+
+.support-card strong {
+    font-size: 13px;
+}
+
+.support-card small {
+    margin-top: 2px;
+    font-size: 11px;
+    opacity: 0.88;
+}
+
+.support-icon {
+    color: var(--accent-color);
+    font-size: 23px;
+}
+
+.support-arrow {
+    margin-left: auto;
+    color: var(--accent-color);
+    font-size: 26px;
+}
+
+.sidebar-divider {
+    height: 1px;
+    margin: 19px 0 12px;
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.sidebar-footer-button {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 6px 9px;
+    border: 0;
+    background: transparent;
+    color: white;
+    text-align: left;
+}
+
+.footer-dot {
+    display: grid;
+    place-items: center;
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    color: var(--sidebar-bg);
+    font-weight: 800;
+}
+
+.ellipsis {
+    margin-left: auto;
+    letter-spacing: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Área de trabalho (à direita do menu lateral)
+   -------------------------------------------------------------------------- */
+.workspace {
+    min-height: 100vh;
+    margin-left: 287px;
+    padding-top: 54px;
+}
+
+/* Barra com "Visualizar como" e botão de tema */
+.workspace-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    height: 79px;
+    padding: 0 clamp(22px, 3vw, 48px);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+}
+
+.workspace-tools {
+    gap: 13px;
+}
+
+.view-as {
+    font-size: 12px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Conteúdo principal e título da página
+   -------------------------------------------------------------------------- */
+.main-content {
+    width: min(100%, 1430px);
+    margin: 0 auto;
+    padding: 58px clamp(22px, 4vw, 66px) 42px;
+}
+
+.page-heading {
+    margin: 0 0 34px;
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+    color: var(--sidebar-bg);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+.page-heading h1 {
+    margin: 0;
+    font-size: clamp(32px, 3vw, 46px);
+    font-weight: 450;
+    letter-spacing: -1.8px;
+    line-height: 1.12;
+}
+
+.page-description {
+    margin: 8px 0 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Rodapé
+   -------------------------------------------------------------------------- */
+.workspace-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px clamp(22px, 4vw, 66px);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 11px;
+}

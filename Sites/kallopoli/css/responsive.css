@@ -1,0 +1,380 @@
+/* ==========================================================================
+   RESPONSIVO
+   Ajustes para telas menores. As regras seguem do maior para o menor
+   tamanho de tela e vêm por último para sobrescrever os estilos normais.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Até 1250px — notebooks pequenos
+   -------------------------------------------------------------------------- */
+@media (max-width: 1250px) {
+    .sidebar {
+        width: 250px;
+    }
+
+    .workspace {
+        margin-left: 250px;
+    }
+
+    .main-content {
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    .content-grid {
+        grid-template-columns: minmax(0, 1fr) 260px;
+        gap: 17px;
+    }
+
+    .reports-panel {
+        padding: 23px 20px 18px;
+    }
+
+    .report-card {
+        gap: 11px;
+        padding: 13px;
+    }
+
+    .report-end {
+        gap: 8px;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   Até 1200px — painéis de indicadores
+   -------------------------------------------------------------------------- */
+@media (max-width: 1200px) {
+    .metrics-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .stages-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   Até 1000px — tablets
+   -------------------------------------------------------------------------- */
+@media (max-width: 1000px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .how-panel {
+        order: 2;
+    }
+
+    .topbar-brand {
+        flex: 1;
+    }
+
+    .topbar-caption {
+        position: static;
+        margin-left: 6px;
+        transform: none;
+    }
+
+    .topbar-actions .button {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   Até 760px — celulares (menu lateral vira gaveta)
+   -------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+
+    /* Barra superior */
+    .topbar {
+        padding: 0 12px;
+    }
+
+    .mobile-menu-button {
+        display: inline-grid;
+    }
+
+    .mini-mark {
+        display: none;
+    }
+
+    .topbar-caption {
+        font-size: 12px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .topbar-actions {
+        gap: 4px;
+    }
+
+    .topbar-actions .icon-button {
+        display: none;
+    }
+
+    .topbar-actions .button {
+        min-height: 34px;
+        padding: 7px 9px;
+        font-size: 10px;
+    }
+
+    .button-google span:last-child {
+        display: none;
+    }
+
+    .button-google {
+        width: 36px;
+        padding: 0 !important;
+    }
+
+    /* Menu lateral escondido, abre ao tocar no botão */
+    .sidebar {
+        width: min(287px, 86vw);
+        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.15);
+        transform: translateX(-105%);
+        transition: transform 0.22s ease;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-scrim.visible {
+        position: fixed;
+        inset: 54px 0 0;
+        z-index: 20;
+        display: block;
+        background: rgba(20, 16, 13, 0.35);
+    }
+
+    /* Área de trabalho */
+    .workspace {
+        margin-left: 0;
+    }
+
+    .workspace-bar {
+        height: 62px;
+        padding: 0 17px;
+        font-size: 11px;
+    }
+
+    .view-as {
+        display: none;
+    }
+
+    .profile-button {
+        min-width: auto;
+        min-height: 35px;
+        padding: 6px 9px;
+    }
+
+    .theme-toggle {
+        width: 35px;
+        height: 35px;
+    }
+
+    .main-content {
+        padding: 34px 16px 30px;
+    }
+
+    .page-heading {
+        margin-bottom: 25px;
+    }
+
+    .page-heading h1 {
+        font-size: 34px;
+    }
+
+    .stepper-card {
+        margin-bottom: 17px;
+        padding: 19px 16px;
+    }
+
+    .stepper {
+        min-width: 640px;
+    }
+
+    /* Relatos */
+    .reports-panel {
+        padding: 20px 14px 16px;
+    }
+
+    .panel-heading {
+        align-items: flex-start;
+    }
+
+    .panel-heading h2 {
+        font-size: 18px;
+    }
+
+    .connection-pill {
+        padding: 7px 9px;
+        font-size: 9px;
+    }
+
+    .report-card {
+        gap: 10px;
+        padding: 12px 10px;
+    }
+
+    .avatar {
+        flex-basis: 38px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .report-date {
+        display: none;
+    }
+
+    .report-end {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+    }
+
+    .report-arrow {
+        display: none;
+    }
+
+    .type-pill {
+        padding: 6px 8px;
+    }
+
+    .workspace-footer {
+        padding: 17px;
+        font-size: 10px;
+    }
+
+    /* Regras, exemplos e painéis de seção */
+    .rule-grid,
+    .example-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-panel {
+        padding: 18px 14px;
+    }
+
+    /* Indicadores, alertas e tabelas */
+    .metrics-grid,
+    .engagement-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stages-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .alert-row {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+
+    .alert-row .button {
+        justify-self: start;
+    }
+
+    .data-table {
+        min-width: 850px;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   Até 420px — celulares pequenos
+   -------------------------------------------------------------------------- */
+@media (max-width: 420px) {
+    .topbar-caption {
+        max-width: 125px;
+    }
+
+    .topbar-actions .button-primary {
+        max-width: 126px;
+        font-size: 9px;
+        line-height: 1.15;
+        white-space: normal;
+    }
+
+    .workspace-bar > span {
+        max-width: 130px;
+    }
+
+    .profile-button {
+        gap: 5px;
+        font-size: 11px;
+    }
+
+    .profile-button svg {
+        width: 17px;
+    }
+
+    .page-heading h1 {
+        font-size: 30px;
+    }
+
+    .panel-heading {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .connection-pill {
+        align-self: flex-start;
+    }
+
+    .report-card {
+        align-items: flex-start;
+    }
+
+    .report-preview {
+        max-width: 48vw;
+    }
+
+    .report-meta {
+        font-size: 8px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal {
+        padding: 18px;
+    }
+
+    .modal-actions {
+        justify-content: stretch;
+    }
+
+    .modal-actions .button {
+        flex: 1 1 100%;
+    }
+
+    .workspace-footer {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   Preferência do sistema: reduzir animações
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

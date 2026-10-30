@@ -1,0 +1,137 @@
+/* ==========================================================================
+   BASE
+   Variáveis de cor (tema claro e escuro), reset e regras globais.
+
+   Ordem das propriedades usada em todos os arquivos CSS:
+   1. posicionamento  2. display/layout  3. tamanho  4. espaçamento
+   5. borda           6. fundo           7. texto/cor  8. efeitos
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Variáveis — tema claro (padrão)
+   -------------------------------------------------------------------------- */
+:root {
+    color-scheme: light;
+
+    --bg-primary: #f8f6f1;
+    --bg-card: #ffffff;
+    --bg-soft: #fffaf0;
+
+    --text-primary: #2b2927;
+    --text-secondary: #817b75;
+
+    --border-color: #e8e0d6;
+
+    --sidebar-bg: #c81018;
+    --sidebar-deep: #a90c13;
+
+    --accent-color: #ffbc0d;
+    --accent-ink: #4d2200;
+
+    --green-bg: #e8f7f0;
+    --green-text: #18835f;
+    --yellow-bg: #fff0cb;
+    --red-soft: #fff0ef;
+
+    --shadow: 0 12px 34px rgba(57, 39, 22, 0.045);
+}
+
+
+/* --------------------------------------------------------------------------
+   Variáveis — tema escuro (ativado por data-theme="dark" no <html>)
+   -------------------------------------------------------------------------- */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --bg-primary: #171716;
+    --bg-card: #222220;
+    --bg-soft: #2a2720;
+
+    --text-primary: #f2eee8;
+    --text-secondary: #b5ada4;
+
+    --border-color: #3e3a35;
+
+    --sidebar-bg: #a80e16;
+    --sidebar-deep: #8d0b12;
+
+    --accent-color: #ffbc0d;
+    --accent-ink: #301900;
+
+    --green-bg: #173b30;
+    --green-text: #75d9b2;
+    --yellow-bg: #473719;
+    --red-soft: #432725;
+
+    --shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+}
+
+
+/* --------------------------------------------------------------------------
+   Reset e regras globais
+   -------------------------------------------------------------------------- */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-width: 320px;
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+
+/* --------------------------------------------------------------------------
+   Acessibilidade
+   -------------------------------------------------------------------------- */
+
+/* Contorno azul ao navegar pelo teclado */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible {
+    outline: 3px solid #2f80ed;
+    outline-offset: 3px;
+}
+
+/* Link "Pular para o conteúdo": fica escondido até receber foco */
+.skip-link {
+    position: fixed;
+    top: -60px;
+    left: 12px;
+    z-index: 1000;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.skip-link:focus {
+    top: 12px;
+}

@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#c81018">
+    <meta name="description" content="Painel demonstrativo Kallopoli — Escuta & Cuidado.">
+    <title>Kallopoli — Escuta &amp; Cuidado</title>
+
+    <!-- Estilos (a ordem importa: cada arquivo pode complementar o anterior) -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Script principal -->
+    <script src="js/script.js" defer></script>
+</head>
+
+<body>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+
+    <div class="app-shell">
+
+        <!-- ========== Barra superior ========== -->
+        <header class="topbar">
+            <div class="topbar-brand">
+                <button
+                    class="icon-button mobile-menu-button"
+                    id="mobile-menu-toggle"
+                    aria-label="Abrir menu"
+                    aria-expanded="false"
+                    aria-controls="sidebar"
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+
+                <span class="mini-mark" aria-hidden="true">K</span>
+
+                <span class="topbar-caption">
+                    Painel web para Kallopoli
+                    <span aria-hidden="true">⌄</span>
+                </span>
+            </div>
+
+            <div class="topbar-actions">
+                <button class="icon-button" id="help-top" aria-label="Ajuda" title="Ajuda">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M9.6 9a2.5 2.5 0 0 1 4.8.8c0 1.8-2.4 2-2.4 3.7M12 17h.01"/>
+                    </svg>
+                </button>
+
+                <button class="button button-primary" id="signup-button">
+                    Criar sua conta com um e-mail
+                </button>
+
+                <button class="button button-google" id="google-button">
+                    <span class="google-g" aria-hidden="true">G</span>
+                    <span>Continuar com o Google</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ========== Menu lateral ========== -->
+        <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+            <div class="brand-lockup">
+                <div class="brand-mark" aria-hidden="true">K</div>
+                <div>
+                    <div class="brand-name">Kallopoli</div>
+                    <div class="brand-subtitle">Escuta &amp; Cuidado</div>
+                </div>
+            </div>
+
+            <div class="nav-label">Navegação</div>
+
+            <nav class="main-nav">
+                <button class="nav-item active" data-page="visao" aria-current="page">
+                    <span aria-hidden="true">▦</span>
+                    <span>Visão geral</span>
+                </button>
+
+                <button class="nav-item" data-page="colaboradores">
+                    <span aria-hidden="true">☻</span>
+                    <span>Colaboradores</span>
+                </button>
+
+                <button class="nav-item" data-page="alertas">
+                    <span aria-hidden="true">⚑</span>
+                    <span>Alertas</span>
+                </button>
+
+                <button class="nav-item" data-page="jornada">
+                    <span aria-hidden="true">➤</span>
+                    <span>Acompanhamento da jornada</span>
+                </button>
+
+                <button class="nav-item" data-page="indicadores">
+                    <span aria-hidden="true">▤</span>
+                    <span>Indicadores</span>
+                </button>
+
+                <button class="nav-item" data-page="configuracoes">
+                    <span aria-hidden="true">⚙</span>
+                    <span>Configurações</span>
+                </button>
+
+                <button class="nav-item" data-page="relatos">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.8A2.5 2.5 0 0 1 4 14.5z"/>
+                        <path d="M8 8h8M8 12h5"/>
+                    </svg>
+                    <span>Relatos salvos</span>
+                </button>
+
+                <button class="nav-item" data-page="acompanhamento">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M9 6h11M9 12h11M9 18h11"/>
+                        <circle cx="4" cy="6" r=".8"/>
+                        <circle cx="4" cy="12" r=".8"/>
+                        <circle cx="4" cy="18" r=".8"/>
+                    </svg>
+                    <span>Acompanhamento</span>
+                </button>
+
+                <button class="nav-item" data-page="regras">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/>
+                        <path d="M1 14h6M9 8h6M17 16h6"/>
+                    </svg>
+                    <span>Regras de atendimento</span>
+                </button>
+
+                <button class="nav-item" data-page="exemplos">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="5" y="2.5" width="14" height="19" rx="1.8"/>
+                        <path d="M8 17.5h8"/>
+                    </svg>
+                    <span>Exemplos</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <button class="support-card" id="support-button">
+                    <span class="support-icon" aria-hidden="true">♧</span>
+                    <span>
+                        <strong>Precisa de ajuda?</strong>
+                        <small>Fale com o suporte</small>
+                    </span>
+                    <span class="support-arrow" aria-hidden="true">›</span>
+                </button>
+
+                <div class="sidebar-divider"></div>
+
+                <button class="sidebar-footer-button" id="sidebar-options">
+                    <span class="footer-dot">K</span>
+                    <span>Preferências</span>
+                    <span class="ellipsis">•••</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Fundo escuro que aparece atrás do menu lateral no celular -->
+        <div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+        <!-- ========== Área de trabalho ========== -->
+        <div class="workspace">
+
+            <!-- Barra com perfil e tema -->
+            <div class="workspace-bar">
+                <span>Ambiente seguro de escuta</span>
+
+                <div class="workspace-tools">
+                    <span class="view-as">Visualizar como</span>
+
+                    <div class="dropdown-wrap">
+                        <button
+                            class="profile-button"
+                            id="profile-toggle"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="8" r="3.5"/>
+                                <path d="M5 20a7 7 0 0 1 14 0"/>
+                            </svg>
+                            <span id="profile-label">Gestor</span>
+                            <span class="chevron">⌄</span>
+                        </button>
+
+                        <div class="dropdown-menu" id="profile-menu" hidden>
+                            <button data-profile="Gestor">Gestor <span>✓</span></button>
+                            <button data-profile="Administrador">Administrador</button>
+                            <p>Perfis demonstrativos, sem permissões reais.</p>
+                        </div>
+                    </div>
+
+                    <button
+                        class="theme-toggle"
+                        id="theme-toggle"
+                        aria-label="Ativar tema escuro"
+                        title="Alternar tema"
+                    >
+                        <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Conteúdo principal (título, etapas e conteúdo de cada página) -->
+            <main class="main-content" id="main-content" tabindex="-1">
+                <div class="page-heading">
+                    <p class="eyebrow" id="page-eyebrow">WHATSAPP · KALLOPOLI</p>
+                    <h1 id="page-title">Relatos salvos</h1>
+                    <p class="page-description" id="page-description">
+                        Mensagens recebidas pelo chatbot e salvas para análise.
+                    </p>
+                </div>
+
+                <!-- Etapas do atendimento (visível apenas em "Relatos salvos") -->
+                <section class="stepper-card" aria-label="Etapas do atendimento">
+                    <div class="stepper" id="stepper">
+                        <div class="step active" data-step="1">
+                            <span class="step-number">1</span>
+                            <span>Relato</span>
+                        </div>
+                        <span class="step-line"></span>
+
+                        <div class="step" data-step="2">
+                            <span class="step-number">2</span>
+                            <span>Análise</span>
+                        </div>
+                        <span class="step-line"></span>
+
+                        <div class="step" data-step="3">
+                            <span class="step-number">3</span>
+                            <span>Revisão</span>
+                        </div>
+                        <span class="step-line"></span>
+
+                        <div class="step" data-step="4">
+                            <span class="step-number">4</span>
+                            <span>Confirmação</span>
+                        </div>
+                        <span class="step-line"></span>
+
+                        <div class="step" data-step="5">
+                            <span class="step-number">5</span>
+                            <span>Registro</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Conteúdo da página atual (o JavaScript troca este bloco ao navegar) -->
+                <div id="page-content">
+                    <div class="content-grid">
+                        <section class="panel reports-panel">
+                            <div class="panel-heading">
+                                <div>
+                                    <p class="overline" id="new-count">3 NOVOS</p>
+                                    <h2>Recebidos pelo WhatsApp</h2>
+                                    <p class="panel-subtitle">Escolha um relato salvo para iniciar a análise.</p>
+                                </div>
+
+                                <span class="connection-pill">
+                                    <span class="status-dot"></span>
+                                    Chat conectado
+                                </span>
+                            </div>
+
+                            <div class="panel-rule"></div>
+
+                            <div class="report-list" id="report-list" aria-live="polite"></div>
+
+                            <p class="demo-note">
+                                Dados fictícios para demonstração. Nenhuma mensagem é enviada ao WhatsApp.
+                            </p>
+                        </section>
+
+                        <aside class="panel how-panel">
+                            <div class="how-title">
+                                <span class="how-icon" aria-hidden="true">▤</span>
+                                <h3>Como funciona</h3>
+                            </div>
+                            <p>
+                                O colaborador envia áudio ou texto pelo WhatsApp.
+                                Aqui, cada mensagem fica salva até ser revisada.
+                            </p>
+                        </aside>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="workspace-footer">
+                <span>Kallopoli · Escuta &amp; Cuidado</span>
+                <span>Ambiente demonstrativo</span>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ========== Janela modal (conteúdo preenchido pelo JavaScript) ========== -->
+    <div class="modal-backdrop" id="modal-backdrop" hidden>
+        <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow">KALLOPOLI</p>
+                    <h2 id="modal-title">Detalhes do relato</h2>
+                </div>
+                <button class="icon-button modal-close" id="modal-close" aria-label="Fechar janela">×</button>
+            </div>
+
+            <div id="modal-content"></div>
+        </section>
+    </div>
+
+    <!-- ========== Mensagens rápidas (toasts) ========== -->
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+</body>
+
+</html>

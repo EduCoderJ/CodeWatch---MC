@@ -1,0 +1,309 @@
+/* ==========================================================================
+   PÁGINAS
+   Estilos específicos de cada página do painel.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Relatos salvos
+   -------------------------------------------------------------------------- */
+.content-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 318px;
+    align-items: start;
+    gap: 24px;
+}
+
+.reports-panel {
+    min-width: 0;
+    padding: 27px 29px 20px;
+}
+
+.report-list {
+    display: grid;
+    gap: 11px;
+}
+
+/* Cartão de cada relato */
+.report-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    min-width: 0;
+    padding: 16px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    text-align: left;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.report-card:hover {
+    border-color: #d8a9a5;
+    box-shadow: 0 5px 16px rgba(50, 30, 20, 0.06);
+    transform: translateY(-1px);
+}
+
+.avatar {
+    display: grid;
+    place-items: center;
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--yellow-bg);
+    color: var(--sidebar-bg);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.report-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.report-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.report-name {
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.report-date {
+    color: var(--text-secondary);
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.report-preview {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.report-meta {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-secondary);
+    font-size: 9px;
+}
+
+.report-end {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.report-arrow {
+    color: var(--text-primary);
+    font-size: 26px;
+    line-height: 1;
+}
+
+/* Quadro "Como funciona" */
+.how-panel {
+    padding: 20px 20px 19px;
+}
+
+.how-title {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.how-icon {
+    color: var(--sidebar-bg);
+    font-size: 19px;
+}
+
+.how-title h3 {
+    margin: 0;
+    color: var(--sidebar-bg);
+    font-size: 12px;
+}
+
+.how-panel p {
+    margin: 8px 0 0 23px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+
+/* --------------------------------------------------------------------------
+   Painel de seção (Acompanhamento, Regras, Exemplos e demais páginas)
+   -------------------------------------------------------------------------- */
+.section-panel {
+    padding: 24px;
+}
+
+.section-panel h2 {
+    margin: 0 0 7px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.section-intro {
+    margin: 0 0 22px;
+    color: var(--text-secondary);
+}
+
+
+/* --------------------------------------------------------------------------
+   Regras de atendimento e Exemplos
+   -------------------------------------------------------------------------- */
+.rule-grid,
+.example-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.rule-card,
+.example-card {
+    padding: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 13px;
+    background: var(--bg-card);
+}
+
+.rule-card h3,
+.example-card h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+}
+
+.rule-card p,
+.example-card p {
+    margin: 0 0 12px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.rule-card ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.example-label {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: var(--green-bg);
+    color: var(--green-text);
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.example-label.avoid {
+    background: var(--red-soft);
+    color: var(--sidebar-bg);
+}
+
+
+/* --------------------------------------------------------------------------
+   Visão geral, Alertas e Acompanhamento da jornada
+   -------------------------------------------------------------------------- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 1fr);
+    align-items: start;
+    gap: 16px;
+}
+
+/* Este painel precisa vir depois de ".panel" para sobrepor a borda */
+.attention-panel {
+    border: 1.5px solid var(--sidebar-bg);
+}
+
+.attention-panel h2 {
+    color: var(--sidebar-bg);
+}
+
+.alert-row {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.alert-row small {
+    color: var(--text-secondary);
+}
+
+.journey-row {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.alert-row p,
+.journey-row p {
+    margin: 5px 0 2px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.alert-row:last-child,
+.journey-row:last-child {
+    border-bottom: 0;
+}
+
+/* Cartões de etapas da jornada (7 colunas) */
+.stages-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.stages-grid .metric-card {
+    min-height: 90px;
+    padding: 14px;
+}
+
+.stages-grid .metric-card strong {
+    font-size: 1.65rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   Indicadores
+   -------------------------------------------------------------------------- */
+.engagement-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 14px;
+}
+
+.engagement-grid .metric-card {
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   Configurações
+   -------------------------------------------------------------------------- */
+.settings-form {
+    display: grid;
+    gap: 10px;
+    max-width: 560px;
+}
+
+.settings-form .field,
+.settings-form .select-field {
+    width: 100%;
+    max-width: 100%;
+}

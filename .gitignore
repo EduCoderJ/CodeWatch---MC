@@ -1,9 +1,10 @@
-# Arquivos de ambiente e chaves sensíveis
+@"
+# Arquivos de ambiente e chaves sensiveis
 .env
 *.env
-!.env.example
+backend/.env
 
-# Dependências e caches
+# Dependencias e caches
 node_modules/
 vendor/
 __pycache__/
@@ -14,3 +15,4 @@ venv/
 
 # Dados locais do Docker
 postgres_data/
+"@ | Set-Content -Path .gitignore -Encoding utf8

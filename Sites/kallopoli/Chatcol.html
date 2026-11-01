@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,49 +12,66 @@
     #chat-container::-webkit-scrollbar {
       width: 6px;
     }
+
     #chat-container::-webkit-scrollbar-track {
       background: transparent;
     }
+
     #chat-container::-webkit-scrollbar-thumb {
       background: #374248;
       border-radius: 3px;
     }
   </style>
 </head>
+
 <body class="bg-[#0b141a] text-gray-100 h-screen flex flex-col justify-between font-sans antialiased">
 
   <!-- Cabeçalho do Chat -->
   <header class="bg-[#202c33] px-4 py-3 flex items-center justify-between shadow-md border-b border-[#2a3942] z-10">
     <div class="flex items-center space-x-3">
       <div class="relative">
-        <div class="w-10 h-10 rounded-full bg-[#005c4b] flex items-center justify-center font-bold text-white text-sm shadow">
+        <div
+          class="w-10 h-10 rounded-full bg-[#005c4b] flex items-center justify-center font-bold text-white text-sm shadow">
           KP
         </div>
         <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#202c33] rounded-full"></span>
       </div>
       <div>
-        <h1 class="text-sm font-semibold text-gray-100 leading-tight">Kallopolli - Suporte RH</h1>
+        <h1 class="text-sm font-semibold text-gray-100 leading-tight"> MIA - Chat bot do MC</h1>
         <span class="text-xs text-emerald-400 font-medium">online</span>
       </div>
     </div>
-    
+
+    <a href="index.html"
+      class="bg-[#2a3942] hover:bg-[#374248] active:scale-95 text-gray-200 text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg transition duration-150 shadow">
+      Administrador
+    </a>
+
     <!-- Ícones Decorativos WhatsApp -->
     <div class="flex items-center space-x-4 text-gray-400">
       <button class="hover:text-gray-200 transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
       </button>
       <button class="hover:text-gray-200 transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
+          </path>
+        </svg>
       </button>
     </div>
   </header>
 
   <!-- Container de Mensagens -->
   <main id="chat-container" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 bg-[#0b141a] bg-opacity-95">
-    
+
     <!-- Mensagem Inicial de Boas-Vindas -->
     <div class="flex flex-col items-start max-w-[85%] sm:max-w-[65%]">
-      <div class="bg-[#202c33] text-gray-200 text-xs sm:text-sm px-3.5 py-2.5 rounded-lg rounded-tl-none shadow border border-[#2a3942] relative">
+      <div
+        class="bg-[#202c33] text-gray-200 text-xs sm:text-sm px-3.5 py-2.5 rounded-lg rounded-tl-none shadow border border-[#2a3942] relative">
         <p class="leading-relaxed">Olá! Envia o teu relato ou questão para registarmos no sistema do RH.</p>
         <span class="text-[10px] text-gray-400 block text-right mt-1 font-mono">Agora</span>
       </div>
@@ -63,15 +81,22 @@
 
   <!-- Rodapé / Barra de Input -->
   <footer class="bg-[#202c33] p-3 flex items-center space-x-3 border-t border-[#2a3942] z-10">
-    <input 
-      id="user-input" 
-      type="text" 
-      placeholder="Escreve a tua mensagem..." 
+    <input id="user-input" type="text" placeholder="Escreve a tua mensagem..."
       class="flex-1 bg-[#2a3942] text-gray-100 text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#00a884] placeholder-gray-400 transition"
-      autocomplete="off"
-    >
-    <button 
-      onclick="enviarMensagem()" 
+      autocomplete="off">
+
+    <!-- Botão de gravar áudio -->
+    <button id="mic-btn" onclick="alternarGravacao()" title="Gravar áudio"
+      class="bg-[#2a3942] hover:bg-[#374248] active:scale-95 text-gray-200 px-3 py-3 rounded-lg transition duration-150 shadow flex items-center justify-center space-x-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+        </path>
+      </svg>
+      <span id="mic-timer" class="hidden text-xs font-mono">0:00</span>
+    </button>
+
+    <button onclick="enviarMensagem()"
       class="bg-[#00a884] hover:bg-[#008f72] active:scale-95 text-white px-5 py-3 rounded-lg text-sm font-semibold transition duration-150 shadow flex items-center justify-center">
       <span>Enviar</span>
     </button>
@@ -83,7 +108,7 @@
     const container = document.getElementById('chat-container');
     const API_URL = "http://localhost:8000";
 
-    input.addEventListener('keypress', function(e) {
+    input.addEventListener('keypress', function (e) {
       if (e.key === 'Enter') enviarMensagem();
     });
 
@@ -125,7 +150,7 @@
       try {
         const respostaBackend = await fetch(`${API_URL}/api/whatsapp/webhook`, {
           method: "POST",
-          headers: { 
+          headers: {
             "Content-Type": "application/json",
             "Accept": "application/json"
           },
@@ -182,7 +207,7 @@
 
     // Função de sanitização contra XSS
     function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
+      return str.replace(/[&<>'"]/g,
         tag => ({
           '&': '&amp;',
           '<': '&lt;',
@@ -194,4 +219,5 @@
     }
   </script>
 </body>
+
 </html>

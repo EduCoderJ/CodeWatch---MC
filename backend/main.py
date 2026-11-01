@@ -1,11 +1,12 @@
 import os
 import traceback
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
-
+from openai import OpenAI
 
 from .database import engine, Base, get_db
 from .models import RelatoColaborador
@@ -24,6 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ===== Configuração da IA =====
 api_key_val = os.getenv("LLM_API_KEY")
 
 if not api_key_val:
@@ -31,15 +33,29 @@ if not api_key_val:
 
 openai_client = OpenAI(
     api_key=api_key_val,
-    base_url=os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1"),
+    base_url=os.getenv("LLM_BASE_URL", "https://api.groq.com/openai/v1"),
 )
-LLM_MODEL = os.getenv("LLM_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
+LLM_MODEL = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
 
+# ===== Prompt do RH =====
+SYSTEM_PROMPT = """Você é o assistente de acolhimento do RH da Kallopolli.
+Responda sempre em português do Brasil, com tom empático, claro e profissional.
+
+Regras:
+- Acolha o colaborador primeiro, depois oriente.
+- Não invente políticas, prazos ou valores da empresa. Se não souber, diga que o RH vai verificar.
+- Se o relato envolver assédio, discriminação, violência, risco à saúde ou à segurança, informe que o caso será encaminhado com prioridade ao RH e ao canal de ética.
+- Não faça diagnósticos médicos ou psicológicos nem aconselhamento jurídico.
+- Respostas curtas: no máximo 5 frases."""
+
+
+# ===== Modelos de entrada =====
 class WebhookWhatsApp(BaseModel):
     remetente: str = Field(..., min_length=8, max_length=20)
     mensagem: str = Field(..., min_length=1, max_length=1000, description="Mensagem do colaborador com limite seguro")
 
 
+# ===== Rotas =====
 @app.get("/")
 def read_root():
     return {"status": "online", "sistema": "Kallopolli RH & AI Core"}
@@ -53,14 +69,7 @@ def receber_webhook_whatsapp(payload: WebhookWhatsApp, db: Session = Depends(get
         resposta_ia = openai_client.chat.completions.create(
             model=LLM_MODEL,
             messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Atue como um assistente de RH empático e profissional. "
-                        "Analise o relato enviado por um colaborador via WhatsApp "
-                        "e forneça um parecer de acolhimento e uma sugestão de resposta."
-                    ),
-                },
+                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": payload.mensagem},
             ],
             timeout=20,
@@ -69,14 +78,9 @@ def receber_webhook_whatsapp(payload: WebhookWhatsApp, db: Session = Depends(get
         conteudo = resposta_ia.choices[0].message.content
         analise_texto = conteudo if conteudo else "Sem resposta gerada pela IA."
 
-    except Exception as ai_err:
-        print("⚠️ Falha na chamada da IA. Ativando fallback.")
+    except Exception as e:
+        print(f"⚠️ Falha na chamada da IA: {type(e).__name__}: {e}")
         traceback.print_exc()
- 
-        analise_texto = (
-            "Olá! O teu relato foi registado com sucesso no sistema do RH. "
-            "A nossa equipa analisará a situação e entrará em contacto em breve."
-        )
 
     try:
         novo_relato = RelatoColaborador(

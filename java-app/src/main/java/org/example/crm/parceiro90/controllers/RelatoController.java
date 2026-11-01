@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/relatos")
 public class RelatoController {
 
@@ -22,18 +23,20 @@ public class RelatoController {
     private final PedidoRepository pedidoRepository;
 
     public RelatoController(ColaboradorRepository colaboradorRepository,
-                            PedidoRepository pedidoRepository) {
+            PedidoRepository pedidoRepository) {
         this.colaboradorRepository = colaboradorRepository;
         this.pedidoRepository = pedidoRepository;
     }
 
     // Dados que o Python envia
-    public record RelatoRequest(String eventoId, String remetente, String resumo, String categoria) {}
+    public record RelatoRequest(String eventoId, String remetente, String resumo, String categoria) {
+    }
 
-    // Dados que o Java devolve
-    public record RelatoResponse(Long id, String eventoId, Long colaboradorId, String resumo,
-                                 String categoria, String situacao, String statusConfirmacao,
-                                 Instant criadoEm) {}
+    public record RelatoResponse(Long id, String eventoId, Long colaboradorId,
+            String nomeColaborador, Long idLoja,
+            String resumo, String categoria, String situacao,
+            String statusConfirmacao, Instant criadoEm) {
+    }
 
     @PostMapping
     public ResponseEntity<?> criar(@RequestBody RelatoRequest req) {
@@ -79,12 +82,17 @@ public class RelatoController {
         return s == null || s.isBlank();
     }
 
-    private RelatoResponse toResponse(Pedido p) {
-        return new RelatoResponse(
-                p.getId(), p.getEventoId(), p.getColaboradorId(), p.getResumo(),
-                p.getCategoria(),
-                p.getSituacao() != null ? p.getSituacao().name() : null,
-                p.getStatusConfirmacao() != null ? p.getStatusConfirmacao().name() : null,
-                p.getCriadoEm());
-    }
-}
+   private RelatoResponse toResponse(Pedido p) {
+    Colaborador c = p.getColaboradorId() != null
+            ? colaboradorRepository.findById(p.getColaboradorId()).orElse(null)
+            : null;
+
+    return new RelatoResponse(
+            p.getId(), p.getEventoId(), p.getColaboradorId(),
+            c != null ? c.getNome() : null,
+            c != null ? c.getIdLoja() : null,
+            p.getResumo(), p.getCategoria(),
+            p.getSituacao() != null ? p.getSituacao().name() : null,
+            p.getStatusConfirmacao() != null ? p.getStatusConfirmacao().name() : null,
+            p.getCriadoEm());
+}}

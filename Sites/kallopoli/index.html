@@ -27,17 +27,18 @@
         <!-- ========== Barra superior ========== -->
         <header class="topbar">
             <div class="topbar-brand">
-                <button
-                    class="icon-button mobile-menu-button"
-                    id="mobile-menu-toggle"
-                    aria-label="Abrir menu"
-                    aria-expanded="false"
-                    aria-controls="sidebar"
-                >
+                <button class="icon-button mobile-menu-button" id="mobile-menu-toggle" aria-label="Abrir menu"
+                    aria-expanded="false" aria-controls="sidebar">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                        <path d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
+
+
+                <a href="Chatcol.html"
+                    class="bg-[#2a3942] hover:bg-[#374248] active:scale-95 text-gray-200 text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg transition duration-150 shadow">
+                    Chat Colaborador RH
+                </a>
 
                 <span class="mini-mark" aria-hidden="true">K</span>
 
@@ -50,8 +51,8 @@
             <div class="topbar-actions">
                 <button class="icon-button" id="help-top" aria-label="Ajuda" title="Ajuda">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="12" cy="12" r="9"/>
-                        <path d="M9.6 9a2.5 2.5 0 0 1 4.8.8c0 1.8-2.4 2-2.4 3.7M12 17h.01"/>
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M9.6 9a2.5 2.5 0 0 1 4.8.8c0 1.8-2.4 2-2.4 3.7M12 17h.01" />
                     </svg>
                 </button>
 
@@ -111,34 +112,35 @@
 
                 <button class="nav-item" data-page="relatos">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.8A2.5 2.5 0 0 1 4 14.5z"/>
-                        <path d="M8 8h8M8 12h5"/>
+                        <path
+                            d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.8A2.5 2.5 0 0 1 4 14.5z" />
+                        <path d="M8 8h8M8 12h5" />
                     </svg>
                     <span>Relatos salvos</span>
                 </button>
 
                 <button class="nav-item" data-page="acompanhamento">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M9 6h11M9 12h11M9 18h11"/>
-                        <circle cx="4" cy="6" r=".8"/>
-                        <circle cx="4" cy="12" r=".8"/>
-                        <circle cx="4" cy="18" r=".8"/>
+                        <path d="M9 6h11M9 12h11M9 18h11" />
+                        <circle cx="4" cy="6" r=".8" />
+                        <circle cx="4" cy="12" r=".8" />
+                        <circle cx="4" cy="18" r=".8" />
                     </svg>
                     <span>Acompanhamento</span>
                 </button>
 
                 <button class="nav-item" data-page="regras">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/>
-                        <path d="M1 14h6M9 8h6M17 16h6"/>
+                        <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3" />
+                        <path d="M1 14h6M9 8h6M17 16h6" />
                     </svg>
                     <span>Regras de atendimento</span>
                 </button>
 
                 <button class="nav-item" data-page="exemplos">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <rect x="5" y="2.5" width="14" height="19" rx="1.8"/>
-                        <path d="M8 17.5h8"/>
+                        <rect x="5" y="2.5" width="14" height="19" rx="1.8" />
+                        <path d="M8 17.5h8" />
                     </svg>
                     <span>Exemplos</span>
                 </button>
@@ -178,15 +180,10 @@
                     <span class="view-as">Visualizar como</span>
 
                     <div class="dropdown-wrap">
-                        <button
-                            class="profile-button"
-                            id="profile-toggle"
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                        >
+                        <button class="profile-button" id="profile-toggle" aria-expanded="false" aria-haspopup="true">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <circle cx="12" cy="8" r="3.5"/>
-                                <path d="M5 20a7 7 0 0 1 14 0"/>
+                                <circle cx="12" cy="8" r="3.5" />
+                                <path d="M5 20a7 7 0 0 1 14 0" />
                             </svg>
                             <span id="profile-label">Gestor</span>
                             <span class="chevron">⌄</span>
@@ -199,15 +196,12 @@
                         </div>
                     </div>
 
-                    <button
-                        class="theme-toggle"
-                        id="theme-toggle"
-                        aria-label="Ativar tema escuro"
-                        title="Alternar tema"
-                    >
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Ativar tema escuro"
+                        title="Alternar tema">
                         <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
-                            <circle cx="12" cy="12" r="4"/>
-                            <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>
+                            <circle cx="12" cy="12" r="4" />
+                            <path
+                                d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
                         </svg>
                     </button>
                 </div>

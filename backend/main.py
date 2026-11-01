@@ -1,19 +1,15 @@
 import os
-import traceback
+import json
+import uuid
 
-from fastapi import FastAPI, Depends, HTTPException
+import httpx
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from .database import engine, Base, get_db
-from .models import RelatoColaborador
-
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
-
-Base.metadata.create_all(bind=engine)
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'), override=True)
 
 app = FastAPI(title="Kallopolli HR Integration Core", version="1.0.0")
 
@@ -25,9 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ===== Configuração da IA =====
 api_key_val = os.getenv("LLM_API_KEY")
-
 if not api_key_val:
     raise ValueError("A variável LLM_API_KEY não foi encontrada! Verifica o arquivo .env.")
 
@@ -35,76 +29,168 @@ openai_client = OpenAI(
     api_key=api_key_val,
     base_url=os.getenv("LLM_BASE_URL", "https://api.groq.com/openai/v1"),
 )
-LLM_MODEL = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
+LLM_MODEL = "openai/gpt-oss-20b"
+print("Modelo em uso:", LLM_MODEL)
 
-# ===== Prompt do RH =====
-SYSTEM_PROMPT = """Você é o assistente de acolhimento do RH da Kallopolli.
-Responda sempre em português do Brasil, com tom empático, claro e profissional.
+
+JAVA_API_URL = os.getenv("JAVA_API_URL", "http://localhost:8080/api/relatos")
+print("Java em:", JAVA_API_URL)
+
+
+SYSTEM_PROMPT = """Você é a MIA, assistente virtual dos colaboradores do MC.
+Ajuda com acolhimento do RH e com dúvidas do dia a dia da loja.
+Responda sempre em português do Brasil, com tom simpático, claro e profissional.
 
 Regras:
-- Acolha o colaborador primeiro, depois oriente.
-- Não invente políticas, prazos ou valores da empresa. Se não souber, diga que o RH vai verificar.
-- Se o relato envolver assédio, discriminação, violência, risco à saúde ou à segurança, informe que o caso será encaminhado com prioridade ao RH e ao canal de ética.
-- Não faça diagnósticos médicos ou psicológicos nem aconselhamento jurídico.
-- Respostas curtas: no máximo 5 frases."""
+- Respostas MUITO curtas: no máximo 2 frases e 40 palavras. Seja direto, sem listas e sem repetir a pergunta.
+- Acolha o colaborador primeiro quando ele relatar um problema, depois oriente.
+- Use apenas as INFORMAÇÕES DA LOJA abaixo. Se a resposta não estiver lá, diga que vai perguntar ao gestor ou ao RH. Nunca invente regras, tempos, temperaturas ou prazos.
+- Se o relato envolver assédio, discriminação, violência, acidente ou risco à saúde ou à segurança, informe que o caso será encaminhado com prioridade ao RH e ao canal de ética.
+- Não faça diagnósticos médicos nem aconselhamento jurídico. Em caso de queimadura ou acidente, mande avisar o gestor na hora.
+
+INFORMAÇÕES DA LOJA (EXEMPLO - substituir pelo manual oficial):
+
+UNIFORME:
+- Camisa oficial limpa e passada, calça preta e sapato preto fechado e antiderrapante.
+- Boné ou touca obrigatório, com todo o cabelo preso e coberto.
+- Crachá sempre visível, na altura do peito.
+- Sem anéis, pulseiras, relógio, brincos grandes ou colares na área de produção.
+- Unhas curtas, limpas e sem esmalte. Barba aparada ou com protetor.
+- Lavar as mãos ao chegar, após usar o banheiro e ao trocar de tarefa.
+
+CHAPA:
+- Aquecer a chapa até a temperatura de trabalho (exemplo: 200 °C) antes de iniciar.
+- Conferir o termômetro no início do turno e registrar na planilha.
+- Tempo de cozimento do hambúrguer conforme o manual (exemplo: cerca de 1 minuto por lado). Nunca servir carne mal passada.
+- Limpar a chapa com a espátula entre os lotes e fazer a limpeza completa no fechamento.
+- Usar luvas térmicas e espátula. Nunca tocar na chapa com as mãos.
+- Se a chapa não atingir a temperatura certa, parar e avisar o gestor.
+
+BATATAS:
+- A fritadeira deve estar na temperatura de trabalho (exemplo: 175 °C) antes de colocar a batata.
+- Tempo de fritura (exemplo: cerca de 3 minutos), sempre com o timer.
+- Escorrer bem, salgar na hora e servir.
+- Batata pronta e não servida vale por pouco tempo (exemplo: 7 minutos). Passou disso, descartar.
+- Não encher demais o cesto.
+- Usar luvas e avental, e cuidado com respingos de óleo quente.
+"""
 
 
-# ===== Modelos de entrada =====
+CATEGORIAS = [
+    "assedio", "discriminacao", "saude_seguranca", "salario_beneficios",
+    "relacionamento_gestor", "jornada_ferias", "equipamento_operacao", "outros",
+]
+
+PROMPT_ANALISE = f"""Você analisa mensagens de colaboradores para o RH.
+Responda APENAS com um JSON válido neste formato:
+
+{{"registrar": true, "resumo": "...", "categoria": "..."}}
+
+Regras:
+- "registrar": true somente se a mensagem trouxer um relato, queixa, problema ou pedido que o RH deva acompanhar. Use false para cumprimentos, agradecimentos e dúvidas simples de rotina (ex.: "oi", "obrigado", "como é o uniforme?").
+- "resumo": 1 a 2 frases, neutras, só com os fatos relatados, em português do Brasil.
+- "categoria": uma destas opções: {', '.join(CATEGORIAS)}."""
+
+FALLBACK_RESPOSTA = (
+    "Olá! O seu relato foi registrado com sucesso no sistema do RH. "
+    "A nossa equipe analisará a situação e entrará em contato em breve."
+)
+
+
 class WebhookWhatsApp(BaseModel):
     remetente: str = Field(..., min_length=8, max_length=20)
-    mensagem: str = Field(..., min_length=1, max_length=1000, description="Mensagem do colaborador com limite seguro")
+    mensagem: str = Field(..., min_length=1, max_length=1000)
 
 
-# ===== Rotas =====
+def responder_colaborador(mensagem: str) -> str:
+    try:
+        resposta = openai_client.chat.completions.create(
+            model=LLM_MODEL,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": mensagem},
+            ],
+            max_tokens=400,
+            timeout=20,
+        )
+        conteudo = resposta.choices[0].message.content
+        return conteudo.strip() if conteudo else FALLBACK_RESPOSTA
+    except Exception as e:
+        print(f" Falha na resposta da IA: {type(e).__name__}: {e}")
+        return FALLBACK_RESPOSTA
+
+
+def analisar_para_rh(mensagem: str) -> dict:
+   
+    try:
+        resposta = openai_client.chat.completions.create(
+            model=LLM_MODEL,
+            messages=[
+                {"role": "system", "content": PROMPT_ANALISE},
+                {"role": "user", "content": mensagem},
+            ],
+            response_format={"type": "json_object"},
+            max_tokens=400,
+            timeout=20,
+        )
+        dados = json.loads(resposta.choices[0].message.content)
+        categoria = dados.get("categoria", "outros")
+        if categoria not in CATEGORIAS:
+            categoria = "outros"
+        return {
+            "registrar": bool(dados.get("registrar", True)),
+            "resumo": dados.get("resumo") or mensagem[:300],
+            "categoria": categoria,
+        }
+    except Exception as e:
+        print(f" Falha na análise para o RH: {type(e).__name__}: {e}")
+        return {"registrar": True, "resumo": mensagem[:300], "categoria": "outros"}
+
+
+def salvar_no_java(evento_id: str, remetente: str, resumo: str, categoria: str) -> dict | None:
+    try:
+        resp = httpx.post(
+            JAVA_API_URL,
+            json={
+                "eventoId": evento_id,
+                "remetente": remetente,
+                "resumo": resumo,
+                "categoria": categoria,
+            },
+            timeout=10,
+        )
+        resp.raise_for_status()
+        return resp.json()
+    except httpx.HTTPStatusError as e:
+        print(f" Java recusou o relato ({e.response.status_code}): {e.response.text}")
+    except Exception as e:
+        print(f" Falha ao falar com o Java: {type(e).__name__}: {e}")
+    return None
+
+
 @app.get("/")
 def read_root():
     return {"status": "online", "sistema": "Kallopolli RH & AI Core"}
 
 
 @app.post("/api/whatsapp/webhook")
-def receber_webhook_whatsapp(payload: WebhookWhatsApp, db: Session = Depends(get_db)):
-    analise_texto = ""
+def receber_webhook_whatsapp(payload: WebhookWhatsApp):
+    resposta = responder_colaborador(payload.mensagem)
+    analise = analisar_para_rh(payload.mensagem)
+    print("Análise:", analise)
 
-    try:
-        resposta_ia = openai_client.chat.completions.create(
-            model=LLM_MODEL,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": payload.mensagem},
-            ],
-            timeout=20,
+    salvo = None
+    if analise["registrar"]:
+        salvo = salvar_no_java(
+            str(uuid.uuid4()), payload.remetente, analise["resumo"], analise["categoria"]
         )
+        print(" Relato enviado ao Java." if salvo else "⚠️ Relato NÃO foi salvo no Java.")
+    else:
+        print("ℹ Mensagem simples: não registrada no RH.")
 
-        conteudo = resposta_ia.choices[0].message.content
-        analise_texto = conteudo if conteudo else "Sem resposta gerada pela IA."
-
-    except Exception as e:
-        print(f"⚠️ Falha na chamada da IA: {type(e).__name__}: {e}")
-        traceback.print_exc()
-
-    try:
-        novo_relato = RelatoColaborador(
-            remetente=payload.remetente,
-            mensagem_original=payload.mensagem,
-            analise_ia=analise_texto,
-            status="Analisado"
-        )
-        db.add(novo_relato)
-        db.commit()
-        db.refresh(novo_relato)
-
-        return {
-            "sucesso": True,
-            "id_registro": novo_relato.id,
-            "parecer_rh": analise_texto
-        }
-    except Exception as db_err:
-        print("--- ERRO NO BANCO DE DADOS ---")
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Erro interno no banco: {str(db_err)}")
-
-
-@app.get("/api/rh/relatos")
-def listar_relatos(db: Session = Depends(get_db)):
-    relatos = db.query(RelatoColaborador).all()
-    return relatos
+    return {
+        "sucesso": True,
+        "salvo_no_rh": salvo is not None,
+        "id_registro": (salvo or {}).get("id"),
+        "parecer_rh": resposta,
+    }

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatos do RH - Kallopoli</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+      color: #222;
+    }
+
+    header {
+      background: #fad325;
+      color: white;
+      padding: 16px 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    .barra {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .botao {
+      padding: 8px 14px;
+      background: #c81018;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+
+    .botao:hover {
+      background: #a00d13;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #eee;
+    }
+
+    .atencao {
+      color: #c81018;
+      font-weight: bold;
+    }
+
+    #aviso {
+      padding: 20px;
+      background: white;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Dúvidas que precisam de atenção</h1>
+  </header>
+
+  <main>
+    <div class="barra">
+      <span id="contagem">Carregando...</span>
+      <a href="index.html" class="botao">Urgentes</a>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Colaborador</th>
+          <th>Categoria</th>
+          <th>Resumo</th>
+          <th>Situação</th>
+        </tr>
+      </thead>
+      <tbody id="lista"></tbody>
+    </table>
+
+    <p id="aviso" hidden></p>
+  </main>
+
+  <script>
+  
+    const URL_JAVA = "http://localhost:8080/api/relatos";
+
+    
+    const URGENTES = ["assedio", "discriminacao", "saude_seguranca"];
+
+    function carregar() {
+      fetch(URL_JAVA)
+        .then(resposta => resposta.json())
+        .then(relatos => mostrar(relatos))
+        .catch(() => {
+          document.getElementById("lista").innerHTML = "";
+          document.getElementById("contagem").textContent = "Sem conexão com o Java";
+          mostrarAviso("Não consegui buscar os relatos. Confira se o Java está rodando.");
+        });
+    }
+
+    function mostrar(relatos) {
+      const lista = document.getElementById("lista");
+      lista.innerHTML = "";
+
+      document.getElementById("contagem").textContent = relatos.length + " relato(s)";
+
+      if (relatos.length === 0) {
+        mostrarAviso("Nenhum relato ainda.");
+        return;
+      }
+
+      document.getElementById("aviso").hidden = true;
+
+      relatos.forEach(relato => {
+        const data = relato.criadoEm ? new Date(relato.criadoEm).toLocaleString("pt-BR") : "";
+        const urgente = URGENTES.includes(relato.categoria);
+
+        const linha = document.createElement("tr");
+        linha.innerHTML =
+          "<td>" + data + "</td>" +
+          "<td>" + (relato.nomeColaborador || "-") + "</td>" +
+          "<td class='" + (urgente ? "atencao" : "") + "'>" + (relato.categoria || "-") + "</td>" +
+          "<td>" + (relato.resumo || "") + "</td>" +
+          "<td>" + (relato.situacao || "-") + "</td>";
+
+        lista.appendChild(linha);
+      });
+    }
+
+    function mostrarAviso(texto) {
+      const aviso = document.getElementById("aviso");
+      aviso.textContent = texto;
+      aviso.hidden = false;
+    }
+
+    carregar();
+    setInterval(carregar, 10000); 
+  </script>
+
+</body>
+</html>

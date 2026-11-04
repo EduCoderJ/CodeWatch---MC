@@ -32,26 +32,10 @@ openai_client = OpenAI(
 LLM_MODEL = "openai/gpt-oss-20b"
 print("Modelo em uso:", LLM_MODEL)
 
-
 JAVA_API_URL = os.getenv("JAVA_API_URL", "http://localhost:8080/api/relatos")
 print("Java em:", JAVA_API_URL)
 
-
-SYSTEM_PROMPT = """Você é a MIA, assistente virtual dos colaboradores do MC.
-Ajuda com acolhimento do RH e com dúvidas do dia a dia da loja.
-Responda sempre em português do Brasil, com tom simpático, claro e profissional.
-
-Regras:
-- Se lembre qu eestamos em um ambiente proficional, quando o funcionário relatar um problema, seja acolhedor e empático.
-- Respostas  curtas: no máximo 2 frases e 60 palavras. Seja direto, sem listas e sem repetir a pergunta.
-- Acolha o colaborador primeiro quando ele relatar um problema, depois oriente.
-- Use apenas as INFORMAÇÕES DA LOJA abaixo. Se a resposta não estiver lá, diga que vai perguntar ao gestor ou ao RH. Nunca invente regras, tempos, temperaturas ou prazos.
-- Se o relato envolver assédio, discriminação, violência, acidente ou risco à saúde ou à segurança, informe que o caso será encaminhado com prioridade ao RH e ao canal de ética.
-- Não faça diagnósticos médicos nem aconselhamento jurídico. Em caso de queimadura ou acidente, mande avisar o gestor na hora.
-- Só diga que o caso será encaminhado ao RH quando for MUITO grave: assédio, discriminação, violência, acidente ou risco real à saúde ou à segurança. Nesses casos, diga que será encaminhado com prioridade ao RH e ao canal de ética.
-- Em qualquer outra situação (cansaço, dúvida, reclamação comum, desconforto leve), acolha e oriente normalmente, sem falar em RH nem em encaminhamento.
-
-Uso: 
+INFO_LOJA = """
 INFORMAÇÕES DA LOJA:
 
 UNIFORME:
@@ -79,14 +63,26 @@ BATATAS:
 - Usar luvas e avental, e cuidado com respingos de óleo quente.
 """
 
+SYSTEM_PROMPT = """Você é a MIA, assistente virtual dos colaboradores do MC.
+Ajuda com acolhimento do RH e com dúvidas do dia a dia da loja.
+Responda sempre em português do Brasil, com tom simpático, claro e profissional.
+
+Regras:
+- Lembre-se de que estamos em um ambiente profissional. Quando o colaborador relatar um problema, seja acolhedor e empático.
+- Respostas curtas: no máximo 2 frases e 60 palavras. Seja direto, sem listas e sem repetir a pergunta.
+- Acolha o colaborador primeiro quando ele relatar um problema, depois oriente.
+- Use apenas as INFORMAÇÕES DA LOJA abaixo. Se a resposta não estiver lá, diga que vai verificar com o gestor. Nunca invente regras, tempos, temperaturas ou prazos.
+- Só diga que o caso será encaminhado ao RH quando for MUITO grave: assédio, discriminação, violência, acidente ou risco real à saúde ou à segurança. Nesses casos, diga que será encaminhado com prioridade ao RH e ao canal de ética.
+- Em qualquer outra situação (cansaço, dúvida, reclamação comum, desconforto leve), acolha e oriente normalmente, sem falar em RH nem em encaminhamento.
+- Não faça diagnósticos médicos nem aconselhamento jurídico. Em caso de queimadura ou acidente, mande avisar o gestor na hora.
+""" + INFO_LOJA
 
 CATEGORIAS = [
     "assedio", "discriminacao", "saude_seguranca",
     "risco_desistencia", "cansaco_sobrecarga", "desmotivacao",
-    "salario_beneficios", "relacionamento_gestor", "jornada_ferias",
+    "salario_beneficios", "relacionamento_gestor", "jornada_ferias", "duvida_sem_resposta",
     "equipamento_operacao", "outros",
 ]
-
 
 PROMPT_ANALISE = f"""Você analisa mensagens de colaboradores para o RH.
 Responda APENAS com um JSON válido neste formato:
@@ -94,20 +90,31 @@ Responda APENAS com um JSON válido neste formato:
 {{"registrar": true, "resumo": "...", "categoria": "..."}}
 
 Regras:
-- "registrar": true somente se a mensagem trouxer um relato, queixa, problema ou pedido que o RH deva acompanhar. Use false para cumprimentos, agradecimentos e dúvidas simples de rotina (ex.: "oi", "obrigado", "como é o uniforme?").
+- "registrar": true quando a mensagem trouxer um relato, queixa, problema ou pedido que o RH deva acompanhar.
+  Cansaço, sobrecarga, desânimo e vontade de desistir ou sair do emprego SEMPRE devem ser registrados.
+  Perguntas cuja resposta NÃO está nas INFORMAÇÕES DA LOJA também devem ser registradas.
+- Use "registrar": false para cumprimentos, agradecimentos (ex.: "oi", "obrigado") e perguntas que as INFORMAÇÕES DA LOJA já respondem (ex.: "como é o uniforme?").
 - "resumo": 1 a 2 frases, neutras, só com os fatos relatados, em português do Brasil.
-- "categoria": uma destas opções: {', '.join(CATEGORIAS)}."""
+  Se for uma pergunta, escreva o resumo como a pergunta reescrita de forma clara.
+- "categoria": uma destas opções: {', '.join(CATEGORIAS)}.
+
+Como escolher a categoria:
+- duvida_sem_resposta: o colaborador faz uma PERGUNTA cuja resposta NÃO está nas INFORMAÇÕES DA LOJA (ex.: horário do intervalo, valor do vale, regra de folga).
+- risco_desistencia: fala em pedir demissão, desistir, sair do emprego ou diz que não aguenta mais trabalhar ali.
+- cansaco_sobrecarga: cansaço, exaustão, excesso de tarefas, falta de descanso ou de folgas.
+- desmotivacao: desânimo, falta de vontade de ir trabalhar, sentir-se desvalorizado.
+- saude_seguranca: somente risco físico real, como acidente, queimadura ou mal-estar grave.
+- Se a mensagem se encaixar em mais de uma, escolha a mais grave, nesta ordem: assedio, discriminacao, saude_seguranca, risco_desistencia, cansaco_sobrecarga, desmotivacao.
+""" + INFO_LOJA
 
 FALLBACK_RESPOSTA = (
     "Olá! O seu relato foi registrado com sucesso no sistema do RH. "
     "A nossa equipe analisará a situação e entrará em contato em breve."
 )
 
-
 class WebhookWhatsApp(BaseModel):
     remetente: str = Field(..., min_length=8, max_length=20)
     mensagem: str = Field(..., min_length=1, max_length=1000)
-
 
 def responder_colaborador(mensagem: str) -> str:
     try:
@@ -123,12 +130,10 @@ def responder_colaborador(mensagem: str) -> str:
         conteudo = resposta.choices[0].message.content
         return conteudo.strip() if conteudo else FALLBACK_RESPOSTA
     except Exception as e:
-        print(f" Falha na resposta da IA: {type(e).__name__}: {e}")
+        print(f"Falha na resposta da IA: {type(e).__name__}: {e}")
         return FALLBACK_RESPOSTA
 
-
 def analisar_para_rh(mensagem: str) -> dict:
-   
     try:
         resposta = openai_client.chat.completions.create(
             model=LLM_MODEL,
@@ -137,7 +142,7 @@ def analisar_para_rh(mensagem: str) -> dict:
                 {"role": "user", "content": mensagem},
             ],
             response_format={"type": "json_object"},
-            max_tokens=400,
+            max_tokens=600,
             timeout=20,
         )
         dados = json.loads(resposta.choices[0].message.content)
@@ -150,9 +155,8 @@ def analisar_para_rh(mensagem: str) -> dict:
             "categoria": categoria,
         }
     except Exception as e:
-        print(f" Falha na análise para o RH: {type(e).__name__}: {e}")
+        print(f"Falha na análise para o RH: {type(e).__name__}: {e}")
         return {"registrar": True, "resumo": mensagem[:300], "categoria": "outros"}
-
 
 def salvar_no_java(evento_id: str, remetente: str, resumo: str, categoria: str) -> dict | None:
     try:
@@ -169,16 +173,14 @@ def salvar_no_java(evento_id: str, remetente: str, resumo: str, categoria: str) 
         resp.raise_for_status()
         return resp.json()
     except httpx.HTTPStatusError as e:
-        print(f" Java recusou o relato ({e.response.status_code}): {e.response.text}")
+        print(f"Java recusou o relato ({e.response.status_code}): {e.response.text}")
     except Exception as e:
-        print(f" Falha ao falar com o Java: {type(e).__name__}: {e}")
+        print(f"Falha ao falar com o Java: {type(e).__name__}: {e}")
     return None
-
 
 @app.get("/")
 def read_root():
     return {"status": "online", "sistema": "Kallopolli RH & AI Core"}
-
 
 @app.post("/api/whatsapp/webhook")
 def receber_webhook_whatsapp(payload: WebhookWhatsApp):
@@ -191,9 +193,9 @@ def receber_webhook_whatsapp(payload: WebhookWhatsApp):
         salvo = salvar_no_java(
             str(uuid.uuid4()), payload.remetente, analise["resumo"], analise["categoria"]
         )
-        print(" Relato enviado ao Java." if salvo else "⚠️ Relato NÃO foi salvo no Java.")
+        print("Relato enviado ao Java." if salvo else "Relato NÃO foi salvo no Java.")
     else:
-        print("ℹ Mensagem simples: não registrada no RH.")
+        print("Mensagem simples: não registrada no RH.")
 
     return {
         "sucesso": True,

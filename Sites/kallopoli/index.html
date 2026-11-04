@@ -1,166 +1,184 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Relatos do RH - Kallopoli</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f4f4f4;
-      color: #222;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Relatos do RH - Kallopoli</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f4f4;
+            color: #222;
+        }
 
-    header {
-      background: #c81018;
-      color: white;
-      padding: 16px 24px;
-    }
+        header {
+            background: #c81018;
+            color: white;
+            padding: 16px 24px;
+        }
 
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
 
-    main {
-      max-width: 1000px;
-      margin: 20px auto;
-      padding: 0 16px;
-    }
+        main {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
 
-    .barra {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
+        .barra {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
 
-    .botao {
-      padding: 8px 14px;
-      background: #c81018;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-    }
+        .botao {
+            padding: 8px 14px;
+            background: #c81018;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
 
-    .botao:hover {
-      background: #a00d13;
-    }
+        .botoes {
+            display: flex;
+            gap: 10px;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-    }
+        .botao:hover {
+            background: #a00d13;
+        }
 
-    th, td {
-      text-align: left;
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
 
-    th {
-      background: #eee;
-    }
+        th,
+        td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
 
-    .atencao {
-      color: #c81018;
-      font-weight: bold;
-    }
+        th {
+            background: #eee;
+        }
 
-    #aviso {
-      padding: 20px;
-      background: white;
-      text-align: center;
-    }
-  </style>
+        .atencao {
+            color: #c81018;
+            font-weight: bold;
+        }
+
+        #aviso {
+            padding: 20px;
+            background: white;
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
 
-  <header>
-    <h1>Relatos importantes do RH</h1>
-  </header>
+    <header>
+        <h1>Relatos importantes do RH</h1>
+    </header>
 
-  <main>
-    <div class="barra">
-      <span id="contagem">Carregando...</span>
-      <a href="Chatcol.html" class="botao">Ir para o chat</a>
-      <a href="relatos_perguntas.html" class="botao">Dúvidas</a> 
-    </div>
+    <main>
+        <div class="barra">
+            <span id="contagem">Carregando...</span>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Colaborador</th>
-          <th>Categoria</th>
-          <th>Resumo</th>
-          <th>Situação</th>
-        </tr>
-      </thead>
-      <tbody id="lista"></tbody>
-    </table>
+            <div class="botoes">
+                <a href="Chatcol.html" class="botao">Ir para o chat</a>
+                <a href="relatos_perguntas.html" class="botao">Dúvidas</a>
+            </div>
+        </div>
 
-    <p id="aviso" hidden></p>
-  </main>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Colaborador</th>
+                    <th>Categoria</th>
+                    <th>Resumo</th>
+                    <th>Situação</th>
+                </tr>
+            </thead>
+            <tbody id="lista"></tbody>
+        </table>
 
-  <script>
-  
-    const URL_JAVA = "http://localhost:8080/api/relatos";
+        <p id="aviso" hidden></p>
+    </main>
 
-    
-    const URGENTES = ["assedio", "discriminacao", "saude_seguranca"];
+    <script>
 
-    function carregar() {
-      fetch(URL_JAVA)
-        .then(resposta => resposta.json())
-        .then(relatos => mostrar(relatos))
-        .catch(() => {
-          document.getElementById("lista").innerHTML = "";
-          document.getElementById("contagem").textContent = "Sem conexão com o Java";
-          mostrarAviso("Não consegui buscar os relatos. Confira se o Java está rodando.");
-        });
-    }
+        const URL_JAVA = "http://localhost:8080/api/relatos";
 
-    function mostrar(relatos) {
-      const lista = document.getElementById("lista");
-      lista.innerHTML = "";
 
-      document.getElementById("contagem").textContent = relatos.length + " relato(s)";
+        const URGENTES = [
+            "assedio", "discriminacao", "saude_seguranca",
+            "risco_desistencia", "cansaco_sobrecarga", "desmotivacao"
+        ];
 
-      if (relatos.length === 0) {
-        mostrarAviso("Nenhum relato ainda.");
-        return;
-      }
 
-      document.getElementById("aviso").hidden = true;
+        function carregar() {
+            fetch(URL_JAVA)
+                .then(resposta => resposta.json())
+                .then(relatos => mostrar(relatos))
+                .catch(() => {
+                    document.getElementById("lista").innerHTML = "";
+                    document.getElementById("contagem").textContent = "Sem conexão com o Java";
+                    mostrarAviso("Não consegui buscar os relatos. Confira se o Java está rodando.");
+                });
+        }
 
-      relatos.forEach(relato => {
-        const data = relato.criadoEm ? new Date(relato.criadoEm).toLocaleString("pt-BR") : "";
-        const urgente = URGENTES.includes(relato.categoria);
+        function mostrar(relatos) {
+            relatos = relatos.filter(r => r.categoria !== "duvida_sem_resposta");
+            const lista = document.getElementById("lista");
+            lista.innerHTML = "";
 
-        const linha = document.createElement("tr");
-        linha.innerHTML =
-          "<td>" + data + "</td>" +
-          "<td>" + (relato.nomeColaborador || "-") + "</td>" +
-          "<td class='" + (urgente ? "atencao" : "") + "'>" + (relato.categoria || "-") + "</td>" +
-          "<td>" + (relato.resumo || "") + "</td>" +
-          "<td>" + (relato.situacao || "-") + "</td>";
+            document.getElementById("contagem").textContent = relatos.length + " relato(s)";
 
-        lista.appendChild(linha);
-      });
-    }
+            if (relatos.length === 0) {
+                mostrarAviso("Nenhum relato ainda.");
+                return;
+            }
 
-    function mostrarAviso(texto) {
-      const aviso = document.getElementById("aviso");
-      aviso.textContent = texto;
-      aviso.hidden = false;
-    }
+            document.getElementById("aviso").hidden = true;
 
-    carregar();
-    setInterval(carregar, 10000); 
-  </script>
+            relatos.forEach(relato => {
+                const data = relato.criadoEm ? new Date(relato.criadoEm).toLocaleString("pt-BR") : "";
+                const urgente = URGENTES.includes(relato.categoria);
+
+                const linha = document.createElement("tr");
+                linha.innerHTML =
+                    "<td>" + data + "</td>" +
+                    "<td>" + (relato.nomeColaborador || "-") + "</td>" +
+                    "<td class='" + (urgente ? "atencao" : "") + "'>" + (relato.categoria || "-") + "</td>" +
+                    "<td>" + (relato.resumo || "") + "</td>" +
+                    "<td>" + (relato.situacao || "-") + "</td>";
+
+                lista.appendChild(linha);
+            });
+        }
+
+        function mostrarAviso(texto) {
+            const aviso = document.getElementById("aviso");
+            aviso.textContent = texto;
+            aviso.hidden = false;
+        }
+
+        carregar();
+        setInterval(carregar, 10000); 
+    </script>
 
 </body>
+
 </html>

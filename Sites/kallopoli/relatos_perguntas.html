@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Relatos do RH - Kallopoli</title>
+  <title>Dúvidas do RH - Kallopoli</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
 
     header {
       background: #fad325;
-      color: white;
+      color: #222;
       padding: 16px 24px;
     }
 
@@ -64,11 +64,6 @@
       background: #eee;
     }
 
-    .atencao {
-      color: #c81018;
-      font-weight: bold;
-    }
-
     #aviso {
       padding: 20px;
       background: white;
@@ -79,7 +74,7 @@
 <body>
 
   <header>
-    <h1>Dúvidas que precisam de atenção</h1>
+    <h1>Dúvidas sem resposta</h1>
   </header>
 
   <main>
@@ -93,8 +88,7 @@
         <tr>
           <th>Data</th>
           <th>Colaborador</th>
-          <th>Categoria</th>
-          <th>Resumo</th>
+          <th>Dúvida</th>
           <th>Situação</th>
         </tr>
       </thead>
@@ -105,11 +99,10 @@
   </main>
 
   <script>
-  
+    
     const URL_JAVA = "http://localhost:8080/api/relatos";
 
-    
-    const URGENTES = ["assedio", "discriminacao", "saude_seguranca"];
+    const CATEGORIA_DUVIDA = "duvida_sem_resposta";
 
     function carregar() {
       fetch(URL_JAVA)
@@ -118,37 +111,44 @@
         .catch(() => {
           document.getElementById("lista").innerHTML = "";
           document.getElementById("contagem").textContent = "Sem conexão com o Java";
-          mostrarAviso("Não consegui buscar os relatos. Confira se o Java está rodando.");
+          mostrarAviso("Não consegui buscar as dúvidas. Confira se o Java está rodando.");
         });
     }
 
     function mostrar(relatos) {
+
+      const duvidas = relatos.filter(r => r.categoria === CATEGORIA_DUVIDA);
+
       const lista = document.getElementById("lista");
       lista.innerHTML = "";
 
-      document.getElementById("contagem").textContent = relatos.length + " relato(s)";
+      document.getElementById("contagem").textContent = duvidas.length + " dúvida(s)";
 
-      if (relatos.length === 0) {
-        mostrarAviso("Nenhum relato ainda.");
+      if (duvidas.length === 0) {
+        mostrarAviso("Nenhuma dúvida sem resposta por enquanto.");
         return;
       }
 
       document.getElementById("aviso").hidden = true;
 
-      relatos.forEach(relato => {
-        const data = relato.criadoEm ? new Date(relato.criadoEm).toLocaleString("pt-BR") : "";
-        const urgente = URGENTES.includes(relato.categoria);
+      duvidas.forEach(duvida => {
+        const data = duvida.criadoEm ? new Date(duvida.criadoEm).toLocaleString("pt-BR") : "";
 
         const linha = document.createElement("tr");
-        linha.innerHTML =
-          "<td>" + data + "</td>" +
-          "<td>" + (relato.nomeColaborador || "-") + "</td>" +
-          "<td class='" + (urgente ? "atencao" : "") + "'>" + (relato.categoria || "-") + "</td>" +
-          "<td>" + (relato.resumo || "") + "</td>" +
-          "<td>" + (relato.situacao || "-") + "</td>";
+        linha.appendChild(criarCelula(data));
+        linha.appendChild(criarCelula(duvida.nomeColaborador || "-"));
+        linha.appendChild(criarCelula(duvida.resumo || ""));
+        linha.appendChild(criarCelula(duvida.situacao || "-"));
 
         lista.appendChild(linha);
       });
+    }
+
+
+    function criarCelula(texto) {
+      const celula = document.createElement("td");
+      celula.textContent = texto;
+      return celula;
     }
 
     function mostrarAviso(texto) {

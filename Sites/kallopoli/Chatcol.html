@@ -84,20 +84,42 @@
 
   </main>
 
+<div id="audio-preview"
+  class="hidden bg-[#202c33] px-4 py-3 border-t border-[#2a3942]">
+
+  <div class="flex flex-wrap items-center gap-3">
+    <audio id="audio-player" controls class="flex-1 min-w-[180px]"></audio>
+
+    <button onclick="descartarAudio()"
+      class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg text-sm">
+      Descartar
+    </button>
+
+    <button id="send-audio-btn" onclick="enviarAudio()"
+      class="bg-[#00a884] hover:bg-[#008f72] text-white px-4 py-2 rounded-lg text-sm font-semibold">
+      Enviar áudio
+    </button>
+  </div>
+</div>
+
   <footer class="bg-[#202c33] p-3 flex items-center space-x-3 border-t border-[#2a3942] z-10">
     <input id="user-input" type="text" placeholder="Escreve a tua mensagem..."
       class="flex-1 bg-[#2a3942] text-gray-100 text-sm rounded-lg px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#00a884] placeholder-gray-400 transition"
       autocomplete="off">
 
-    <button id="mic-btn" onclick="alternarGravacao()" title="Gravar áudio"
-      class="bg-[#2a3942] hover:bg-[#374248] active:scale-95 text-gray-200 px-3 py-3 rounded-lg transition duration-150 shadow flex items-center justify-center space-x-2">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
-        </path>
-      </svg>
-      <span id="mic-timer" class="hidden text-xs font-mono">0:00</span>
-    </button>
+  <button id="mic-btn" onclick="alternarGravacao()" title="Gravar áudio"
+    class="bg-[#2a3942] hover:bg-[#374248] active:scale-95 text-gray-200 px-3 py-3 rounded-lg transition duration-150 shadow flex items-center justify-center space-x-2">
+
+    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+      viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="2"
+        d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+      </path>
+    </svg>
+
+    <span id="mic-timer" class="hidden text-xs font-mono">0:00</span>
+  </button>
 
     <button onclick="enviarMensagem()"
       class="bg-[#00a884] hover:bg-[#008f72] active:scale-95 text-white px-5 py-3 rounded-lg text-sm font-semibold transition duration-150 shadow flex items-center justify-center">
@@ -105,11 +127,215 @@
     </button>
   </footer>
 
-  
   <script>
     const input = document.getElementById('user-input');
     const container = document.getElementById('chat-container');
-    const API_URL = "http://localhost:8001";
+    const API_URL = "http://127.0.0.1:8001";
+
+    let gravador = null;
+    let partesAudio = [];
+    let audioBlob = null;
+    let streamAudio = null;
+    let intervaloGravacao = null;
+    let segundosGravacao = 0;
+
+    const micBtn = document.getElementById("mic-btn");
+    const micTimer = document.getElementById("mic-timer");
+    const audioPreview = document.getElementById("audio-preview");
+    const audioPlayer = document.getElementById("audio-player");
+    const sendAudioBtn = document.getElementById("send-audio-btn");
+
+
+    async function alternarGravacao() {
+      if (gravador && gravador.state === "recording") {
+        gravador.stop();
+        return;
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Seu navegador não permite gravação de áudio neste ambiente.");
+        return;
+      }
+
+      if (!window.MediaRecorder) {
+        alert("Seu navegador não oferece suporte à gravação de áudio.");
+        return;
+      }
+
+      try {
+        streamAudio = await navigator.mediaDevices.getUserMedia({
+          audio: true
+        });
+
+        partesAudio = [];
+        audioBlob = null;
+        segundosGravacao = 0;
+
+        gravador = new MediaRecorder(streamAudio);
+
+        gravador.ondataavailable = function (evento) {
+          if (evento.data.size > 0) {
+            partesAudio.push(evento.data);
+          }
+        };
+
+        gravador.onstop = function () {
+          const tipo = gravador.mimeType || "audio/webm";
+
+          audioBlob = new Blob(partesAudio, {
+            type: tipo
+          });
+
+          audioPlayer.src = URL.createObjectURL(audioBlob);
+          audioPreview.classList.remove("hidden");
+
+          micBtn.classList.remove("bg-red-700");
+          micTimer.classList.add("hidden");
+
+          if (streamAudio) {
+            streamAudio.getTracks().forEach(track => track.stop());
+            streamAudio = null;
+          }
+
+          clearInterval(intervaloGravacao);
+        };
+
+        gravador.start();
+
+        micBtn.classList.add("bg-red-700");
+        micTimer.classList.remove("hidden");
+
+        intervaloGravacao = setInterval(() => {
+          segundosGravacao++;
+
+          const minutos = Math.floor(segundosGravacao / 60);
+          const segundos = segundosGravacao % 60;
+
+          micTimer.textContent =
+            `${minutos}:${String(segundos).padStart(2, "0")}`;
+        }, 1000);
+
+      } catch (erro) {
+        alert("Não foi possível acessar o microfone: " + erro.message);
+      }
+    }
+
+
+    function descartarAudio() {
+      audioBlob = null;
+      partesAudio = [];
+
+      audioPlayer.pause();
+      audioPlayer.removeAttribute("src");
+      audioPreview.classList.add("hidden");
+    }
+
+
+    async function enviarAudio() {
+      if (!audioBlob) {
+        alert("Nenhum áudio foi gravado.");
+        return;
+      }
+
+      const extensao = audioBlob.type.includes("ogg") ? "ogg" : "webm";
+
+      const formulario = new FormData();
+
+      formulario.append("remetente", "5551999887766");
+
+      formulario.append(
+        "arquivo",
+        audioBlob,
+        `gravacao.${extensao}`
+      );
+
+      const horaAtual = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      container.insertAdjacentHTML("beforeend", `
+        <div class="flex flex-col items-end max-w-[85%] sm:max-w-[65%] ml-auto">
+          <div class="bg-[#005c4b] text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg rounded-tr-none shadow">
+            <p>🎤 Mensagem de áudio</p>
+            <span class="text-[10px] text-emerald-200">${horaAtual}</span>
+          </div>
+        </div>
+      `);
+
+      const idLoading = "audio-loading-" + Date.now();
+
+      container.insertAdjacentHTML("beforeend", `
+        <div id="${idLoading}" class="flex flex-col items-start max-w-[85%] sm:max-w-[65%]">
+          <div class="bg-[#202c33] text-gray-400 text-xs px-3.5 py-2 rounded-lg italic border border-[#2a3942]">
+            Transcrevendo áudio e analisando mensagem...
+          </div>
+        </div>
+      `);
+
+      container.scrollTop = container.scrollHeight;
+
+      sendAudioBtn.disabled = true;
+      sendAudioBtn.textContent = "Enviando...";
+
+      try {
+        const respostaBackend = await fetch(
+          `${API_URL}/api/whatsapp/audio`,
+          {
+            method: "POST",
+            body: formulario
+          }
+        );
+
+        const dados = await respostaBackend.json();
+
+        if (!respostaBackend.ok) {
+          throw new Error(
+            dados.detail || `Erro HTTP: ${respostaBackend.status}`
+          );
+        }
+
+        const elLoading = document.getElementById(idLoading);
+        if (elLoading) elLoading.remove();
+
+        const textoTranscrito = dados.mensagem_transcrita || "";
+        const respostaBot = dados.parecer_rh ||
+          "Recebido e registrado no sistema do RH.";
+
+        container.insertAdjacentHTML("beforeend", `
+          <div class="flex flex-col items-end max-w-[85%] sm:max-w-[65%] ml-auto">
+            <div class="bg-[#2a3942] text-gray-200 text-xs sm:text-sm px-3.5 py-2.5 rounded-lg shadow">
+              <p class="text-gray-400 text-[10px] mb-1">Transcrição do áudio:</p>
+              <p class="break-words">${escapeHTML(textoTranscrito)}</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-start max-w-[85%] sm:max-w-[65%]">
+            <div class="bg-[#202c33] text-gray-200 text-xs sm:text-sm px-3.5 py-2.5 rounded-lg rounded-tl-none shadow border border-[#2a3942]">
+              <p class="leading-relaxed break-words">${escapeHTML(respostaBot)}</p>
+              <span class="text-[10px] text-gray-400 block text-right mt-1">${horaAtual}</span>
+            </div>
+          </div>
+        `);
+
+        descartarAudio();
+
+      } catch (erro) {
+        const elLoading = document.getElementById(idLoading);
+        if (elLoading) elLoading.remove();
+
+        container.insertAdjacentHTML("beforeend", `
+          <div class="text-red-400 text-xs p-3">
+            Falha ao enviar áudio: ${escapeHTML(erro.message)}
+          </div>
+        `);
+
+      } finally {
+        sendAudioBtn.disabled = false;
+        sendAudioBtn.textContent = "Enviar áudio";
+        container.scrollTop = container.scrollHeight;
+      }
+    }
 
     input.addEventListener('keypress', function (e) {
       if (e.key === 'Enter') enviarMensagem();

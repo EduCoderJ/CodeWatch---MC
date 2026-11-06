@@ -3,11 +3,13 @@ import json
 import uuid
 
 import httpx
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from openai import OpenAI
+from io import BytesIO
+from groq import Groq
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'), override=True)
 
@@ -29,6 +31,9 @@ openai_client = OpenAI(
     api_key=api_key_val,
     base_url=os.getenv("LLM_BASE_URL", "https://api.groq.com/openai/v1"),
 )
+
+groq_client = Groq(api_key=api_key_val)
+
 LLM_MODEL = "openai/gpt-oss-20b"
 print("Modelo em uso:", LLM_MODEL)
 
@@ -184,16 +189,35 @@ def read_root():
 
 @app.post("/api/whatsapp/webhook")
 def receber_webhook_whatsapp(payload: WebhookWhatsApp):
-    resposta = responder_colaborador(payload.mensagem)
-    analise = analisar_para_rh(payload.mensagem)
+    return processar_mensagem(
+        payload.mensagem,
+        payload.remetente
+    )
+
+def processar_mensagem(mensagem: str, remetente: str) -> dict:
+    """
+    Reutiliza o mesmo processamento para mensagens digitadas
+    e mensagens transcritas de áudio.
+    """
+    resposta = responder_colaborador(mensagem)
+    analise = analisar_para_rh(mensagem)
+
     print("Análise:", analise)
 
     salvo = None
+
     if analise["registrar"]:
         salvo = salvar_no_java(
-            str(uuid.uuid4()), payload.remetente, analise["resumo"], analise["categoria"]
+            str(uuid.uuid4()),
+            remetente,
+            analise["resumo"],
+            analise["categoria"]
         )
-        print("Relato enviado ao Java." if salvo else "Relato NÃO foi salvo no Java.")
+        print(
+            "Relato enviado ao Java."
+            if salvo else
+            "Relato NÃO foi salvo no Java."
+        )
     else:
         print("Mensagem simples: não registrada no RH.")
 
@@ -202,4 +226,66 @@ def receber_webhook_whatsapp(payload: WebhookWhatsApp):
         "salvo_no_rh": salvo is not None,
         "id_registro": (salvo or {}).get("id"),
         "parecer_rh": resposta,
+        "mensagem_transcrita": mensagem
     }
+
+
+@app.post("/api/whatsapp/audio")
+async def receber_audio(
+    remetente: str = Form(...),
+    arquivo: UploadFile = File(...)
+):
+    # Limita o tamanho do áudio a 20 MB.
+    conteudo = await arquivo.read()
+
+    if not conteudo:
+        raise HTTPException(
+            status_code=400,
+            detail="O arquivo de áudio está vazio."
+        )
+
+    if len(conteudo) > 20 * 1024 * 1024:
+        raise HTTPException(
+            status_code=413,
+            detail="O áudio ultrapassa o limite de 20 MB."
+        )
+
+    try:
+        nome_arquivo = arquivo.filename or "gravacao.webm"
+        tipo_arquivo = arquivo.content_type or "audio/webm"
+
+        transcricao = groq_client.audio.transcriptions.create(
+            file=(
+                nome_arquivo,
+                BytesIO(conteudo),
+                tipo_arquivo
+            ),
+            model="whisper-large-v3-turbo",
+            language="pt",
+            response_format="text"
+        )
+
+        mensagem = str(transcricao).strip()
+
+        if not mensagem:
+            raise HTTPException(
+                status_code=422,
+                detail="Não foi possível identificar fala no áudio."
+            )
+
+        print("Áudio transcrito:", mensagem)
+
+        return processar_mensagem(mensagem, remetente)
+
+    except HTTPException:
+        raise
+
+    except Exception as erro:
+        print(
+            f"Falha ao processar áudio: "
+            f"{type(erro).__name__}: {erro}"
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="Não foi possível processar o áudio."
+        )

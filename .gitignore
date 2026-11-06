@@ -1,18 +1,48 @@
-@"
-# Arquivos de ambiente e chaves sensiveis
+# Environment variables and secrets
 .env
-*.env
-backend/.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
 
-# Dependencias e caches
-node_modules/
-vendor/
-__pycache__/
-*.pyc
-.venv/
+# Python virtual environments
 venv/
-.DS_Store
+.venv/
+env/
 
-# Dados locais do Docker
-postgres_data/
-"@ | Set-Content -Path .gitignore -Encoding utf8
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test and analysis cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# IDE and editor
+.vscode/
+.idea/
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Temporary and backup files
+*.tmp
+*.bak
+*.old
+
+# Docker generated artifacts
+*.tar
+*.tar.gz
+
+# Java / Maven
+target/
+**/target/
+*.class
